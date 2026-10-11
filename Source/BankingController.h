@@ -182,5 +182,6 @@
 
 + (BankingController *)controller NS_SWIFT_NAME(controller());
 - (BOOL)save;
+- (NSInteger)processProviderResults: (NSArray *)resultList;
 
 @end

@@ -999,6 +999,18 @@ static BankingController *bankinControllerInstance;
     LogLeave;
 }
 
+// Statements of accounts from a provider skip the manual transaction check, because the provider finishes
+// after the bank requests and their selection window.
+- (NSInteger)processProviderResults: (NSArray *)resultList {
+    NSInteger count = 0;
+    for (BankQueryResult *result in resultList) {
+        count += [result.account updateFromQueryResult: result];
+    }
+    [self requestFinished: resultList];
+    [self save];
+    return count;
+}
+
 - (void)requestFinished: (NSArray *)resultList {
     LogEnter;
 

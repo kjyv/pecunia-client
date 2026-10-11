@@ -229,6 +229,7 @@ private enum ScalableError: LocalizedError {
     private class func refresh(_ accounts: [BankAccount], interactive: Bool) async {
         do {
             let session = try await McpSession.open(token: try await accessToken(interactive: interactive));
+            var cashAccounts: [(account: BankAccount, balance: NSDecimalNumber?, transactions: [Transaction])] = [];
             for account in accounts {
                 guard account.managedObjectContext != nil, !account.isDeleted, let kind = Kind(account.providerAccountId) else {
                     continue;
@@ -241,13 +242,28 @@ private enum ScalableError: LocalizedError {
                     }
                 case .cash(let portfolioId):
                     let breakdown = try await session.call("get_portfolio_cash_breakdown", ["portfolioId": portfolioId]);
-                    if let balance = decimal((breakdown["cash"] as? [String: Any])?["cashBalance"]) {
-                        account.updateBalance(withValue: balance.rounding(accordingToBehavior: centRounding));
-                    }
+                    let balance = decimal((breakdown["cash"] as? [String: Any])?["cashBalance"])?.rounding(accordingToBehavior: centRounding);
+                    // The overlap catches transactions that settled after the last fetch.
+                    let from = account.latestTransferDate.map { $0.addingTimeInterval(-60 * 24 * 3600) };
+                    let transactions = try await self.transactions(session, portfolioId: portfolioId, from: from);
+                    cashAccounts.append((account, balance, transactions));
                 case .depot(let portfolioId):
                     let holdings = try await session.call("get_portfolio_holdings", ["portfolioId": portfolioId]);
                     let overview = try await session.call("get_portfolio_overview", ["portfolioId": portfolioId]);
                     updateDepot(account, holdings: holdings, overview: overview);
+                }
+            }
+            // Without an await in between, a bank request cannot reset the memory context while the
+            // statements are built.
+            var results: [BankQueryResult] = [];
+            for cash in cashAccounts where cash.account.managedObjectContext != nil && !cash.account.isDeleted {
+                results.append(queryResult(for: cash.account, balance: cash.balance, transactions: cash.transactions));
+            }
+            if !results.isEmpty {
+                let count = BankingController.controller().processProviderResults(results);
+                if count > 0 {
+                    StatusBarController.controller().setMessage(String(format: NSLocalizedString("AP218", comment: ""), Int32(count)),
+                                                                removeAfter: 120);
                 }
             }
             BankingCategory.bankRoot().updateSums();
@@ -261,6 +277,152 @@ private enum ScalableError: LocalizedError {
             StatusBarController.controller().setMessage(String(format: NSLocalizedString("AP2346", comment: ""),
                                                                error.localizedDescription), removeAfter: 120);
         }
+    }
+
+    // MARK: - Transactions
+
+    fileprivate struct Transaction {
+        let id: String;
+        let date: Date;
+        let status: String;
+        let type: String;
+        let amount: NSDecimalNumber?;
+        let quantity: NSDecimalNumber?;
+        let isin: String?;
+        let description: String;
+        let currency: String;
+        let isCancellation: Bool;
+    }
+
+    // Transaction types that move cash, with the sign of the booking. The sign comes from the type, so it does
+    // not depend on the sign of the amounts. Securities transfers, swaps, currency switches and reinvestments
+    // leave the cash balance alone and are left out.
+    private static let cashTypes: [String: (sign: Int, text: String)] = [
+        "BUY": (-1, NSLocalizedString("AP2354", comment: "Kauf")),
+        "SAVINGS_PLAN": (-1, NSLocalizedString("AP2355", comment: "Sparplan")),
+        "SELL": (1, NSLocalizedString("AP2356", comment: "Verkauf")),
+        "DEPOSIT": (1, NSLocalizedString("AP2357", comment: "Einzahlung")),
+        "WITHDRAWAL": (-1, NSLocalizedString("AP2358", comment: "Auszahlung")),
+        "CASH_TRANSFER_IN": (1, NSLocalizedString("AP2359", comment: "Übertrag Eingang")),
+        "CASH_TRANSFER_OUT": (-1, NSLocalizedString("AP2360", comment: "Übertrag Ausgang")),
+        "DISTRIBUTION": (1, NSLocalizedString("AP2361", comment: "Ausschüttung")),
+        "INTEREST": (1, NSLocalizedString("AP2362", comment: "Zinsen")),
+        "FEE": (-1, NSLocalizedString("AP2363", comment: "Gebühr")),
+        "TAX": (-1, NSLocalizedString("AP2364", comment: "Steuer")),
+        "TAX_RETURN": (1, NSLocalizedString("AP2365", comment: "Steuererstattung"))
+    ];
+    private static let droppedStatuses: Set<String> = ["CANCELLED", "CANCEL_REQUESTED", "EXPIRED", "REJECTED"];
+
+    private static let quantityFormatter: NumberFormatter = {
+        let formatter = NumberFormatter();
+        formatter.numberStyle = .decimal;
+        formatter.maximumFractionDigits = 6;
+        return formatter;
+    }();
+
+    // Broker and crypto transactions page separately, so each list is read to its end. The first page
+    // comes twice, the id removes the duplicates.
+    fileprivate class func transactions(_ session: McpSession, portfolioId: String, from: Date?,
+                                        types: [String]? = nil) async throws -> [Transaction] {
+        var arguments: [String: Any] = ["portfolioId": portfolioId, "pageSize": 100];
+        if let from = from {
+            arguments["fromTime"] = ISO8601DateFormatter().string(from: from);
+        }
+        if let types = types {
+            arguments["transactionTypes"] = types;
+        }
+        var transactions: [String: Transaction] = [:];
+        for cursorKey in ["cursor", "cryptoCursor"] {
+            var cursor: String? = nil;
+            repeat {
+                var pageArguments = arguments;
+                if let cursor = cursor {
+                    pageArguments[cursorKey] = cursor;
+                }
+                let page = try await session.call("list_portfolio_transactions", pageArguments);
+                let isCrypto = cursorKey == "cryptoCursor";
+                let list = isCrypto ? page["crypto"] as? [String: Any] ?? [:] : page;
+                for item in list["transactions"] as? [[String: Any]] ?? [] {
+                    if let transaction = isCrypto ? cryptoTransaction(item) : brokerTransaction(item) {
+                        transactions[transaction.id] = transaction;
+                    }
+                }
+                cursor = (list["page"] as? [String: Any])?["nextCursor"] as? String;
+            } while cursor != nil;
+        }
+        return Array(transactions.values);
+    }
+
+    private class func brokerTransaction(_ item: [String: Any]) -> Transaction? {
+        guard let id = item["id"] as? String, let date = date(item["lastEventAt"]) else {
+            return nil;
+        }
+        // The details of a transaction are in the object of its kind.
+        let details = ["security", "cash", "nonTradeSecurity", "eltif"].lazy.compactMap { item[$0] as? [String: Any] }.first ?? [:];
+        let type = (details["transactionType"] as? String).flatMap { cashTypes[$0] != nil ? $0 : nil }
+            ?? (details["side"] as? String) ?? (details["transactionType"] as? String) ?? (item["category"] as? String) ?? "";
+        return Transaction(id: id, date: date, status: item["status"] as? String ?? "", type: type,
+                           amount: decimal(details["amount"]), quantity: decimal(details["quantity"]),
+                           isin: details["isin"] as? String ?? details["relatedIsin"] as? String,
+                           description: item["description"] as? String ?? "", currency: item["currency"] as? String ?? "EUR",
+                           isCancellation: item["isCancellation"] as? Bool ?? false);
+    }
+
+    private class func cryptoTransaction(_ item: [String: Any]) -> Transaction? {
+        guard let id = item["id"] as? String, let date = date(item["lastEventAt"]) else {
+            return nil;
+        }
+        let type = (item["transactionType"] as? String).flatMap { cashTypes[$0] != nil ? $0 : nil }
+            ?? (item["side"] as? String) ?? (item["transactionType"] as? String) ?? "";
+        return Transaction(id: "crypto:" + id, date: date, status: item["status"] as? String ?? "", type: type,
+                           amount: decimal(item["amount"]), quantity: decimal(item["coinQuantity"]), isin: nil,
+                           description: item["description"] as? String ?? item["ticker"] as? String ?? "",
+                           currency: item["currency"] as? String ?? "EUR", isCancellation: false);
+    }
+
+    // Statements of the cash account, oldest first. Transactions that have not settled yet become preliminary
+    // statements, which the next fetch replaces.
+    private class func queryResult(for account: BankAccount, balance: NSDecimalNumber?, transactions: [Transaction]) -> BankQueryResult {
+        let context = MOAssistant.shared().memContext!;
+        let result = BankQueryResult();
+        result.account = account;
+        result.balance = balance;
+
+        for transaction in transactions.sorted(by: { $0.date < $1.date }) where !droppedStatuses.contains(transaction.status) {
+            guard let cashType = cashTypes[transaction.type], var amount = transaction.amount else {
+                logDebug("Scalable transaction %@ of type %@ does not move cash", arguments: transaction.id as NSString, transaction.type as NSString);
+                continue;
+            }
+            if amount.compare(NSDecimalNumber.zero) == .orderedAscending {
+                amount = amount.multiplying(by: NSDecimalNumber(value: -1));
+            }
+            let sign = transaction.isCancellation ? -cashType.sign : cashType.sign;
+
+            let statement = NSEntityDescription.insertNewObject(forEntityName: "BankStatement", into: context) as! BankStatement;
+            statement.localAccount = account.accountNumber();
+            statement.localBankCode = account.bankCode;
+            statement.bankReference = transaction.id;
+            statement.currency = transaction.currency;
+            statement.date = transaction.date;
+            statement.valutaDate = transaction.date;
+            statement.value = amount.multiplying(by: NSDecimalNumber(value: sign), withBehavior: centRounding);
+            statement.remoteName = transaction.description;
+            statement.transactionText = cashType.text;
+            statement.transactionCode = "999";
+            var purpose = cashType.text;
+            if let quantity = transaction.quantity, let text = quantityFormatter.string(from: quantity) {
+                purpose += " " + text;
+            }
+            if let isin = transaction.isin {
+                purpose += " " + isin;
+            }
+            statement.purpose = purpose;
+            statement.isStorno = NSNumber(value: transaction.isCancellation);
+            statement.isPreliminary = NSNumber(value: transaction.status != "SETTLED");
+            result.statements.append(statement);
+        }
+        account.evaluateQueryResult(result);
+        return result;
     }
 
     // Holdings carry no buy price, so the depot view shows no change for them. Crypto at Scalable counts in

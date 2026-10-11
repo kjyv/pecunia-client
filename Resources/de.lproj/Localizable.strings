@@ -878,5 +878,17 @@ AP2350 = "Die Anmeldung bei Scalable wurde nicht innerhalb von 10 Minuten abgesc
 AP2351 = "Unerwartete Antwort von Scalable (%@)";
 AP2352 = "Die Scalable-Konten bleiben erhalten, werden aber nicht mehr aktualisiert.";
 AP2353 = "Die Anmeldung bei Scalable wurde abgebrochen.";
+AP2354 = "Kauf";
+AP2355 = "Sparplan";
+AP2356 = "Verkauf";
+AP2357 = "Einzahlung";
+AP2358 = "Auszahlung";
+AP2359 = "Übertrag (Eingang)";
+AP2360 = "Übertrag (Ausgang)";
+AP2361 = "Ausschüttung";
+AP2362 = "Zinsen";
+AP2363 = "Gebühr";
+AP2364 = "Steuer";
+AP2365 = "Steuererstattung";
 
 
