@@ -58,7 +58,10 @@
     NSBox          *currentBox;
     BOOL           triedFirst;
     BOOL           bankUserCreated;
+    NSTextField    *scalableInfoField;
 }
+
+@property (nonatomic, copy) NSString *bankCodeToSelect; // Bank user to select when the window opens.
 
 - (id)initForController: (BankingController *)con;
 

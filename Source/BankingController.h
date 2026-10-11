@@ -114,6 +114,9 @@
 
 - (IBAction)addAccount: (id)sender;
 - (IBAction)addCryptoAccount: (id)sender;
+- (IBAction)addScalableAccount: (id)sender;
+- (BOOL)isCryptoBankNode: (BankingCategory *)category;
+- (BOOL)isScalableCategory: (BankingCategory *)category;
 - (IBAction)showProperties: (id)sender;
 - (IBAction)deleteAccount: (id)sender;
 - (IBAction)editPreferences: (id)sender;

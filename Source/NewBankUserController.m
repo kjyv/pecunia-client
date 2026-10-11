@@ -38,6 +38,9 @@
 
 @end
 
+// Controls with this tag only apply to an HBCI access.
+static const NSInteger HBCIControlTag = 1000;
+
 @implementation NewBankUserController
 
 - (id)initForController: (BankingController *)con {
@@ -57,6 +60,27 @@
 
     // Sicherheitsverfahren
     currentBox = pinTanBox;
+
+    // Shown instead of the HBCI controls when the Scalable connection is selected.
+    scalableInfoField = [NSTextField wrappingLabelWithString: NSLocalizedString(@"AP2339", nil)];
+    scalableInfoField.frame = NSMakeRect(285, 60, 480, 70);
+    scalableInfoField.hidden = YES;
+    [self.window.contentView addSubview: scalableInfoField];
+}
+
+- (void)showDetailsForUser: (BankUser *)user {
+    BOOL isScalable = [self isScalable: user];
+    [self setHBCIControlsHidden: isScalable inView: self.window.contentView];
+    scalableInfoField.hidden = !isScalable;
+}
+
+- (void)setHBCIControlsHidden: (BOOL)hidden inView: (NSView *)view {
+    for (NSView *subview in view.subviews) {
+        if (subview.tag == HBCIControlTag) {
+            subview.hidden = hidden;
+        }
+        [self setHBCIControlsHidden: hidden inView: subview];
+    }
 }
 
 #pragma mark -
@@ -68,6 +92,10 @@
         return nil;
     }
     return [selection lastObject];
+}
+
+- (BOOL)isScalable: (BankUser *)user {
+    return user.secMethod.intValue == SecMethod_Scalable;
 }
 
 #pragma mark -
@@ -139,6 +167,13 @@
     if (step == 0) {
         bankUserCreated = NO;
         NSInteger idx = [secMethodPopup indexOfSelectedItem];
+        if (idx == 2) {
+            // Scalable Capital: the login runs in its own sheet and adds the bank user.
+            [userSheet orderOut: sender];
+            [NSApp endSheet: userSheet returnCode: 1];
+            [bankController addScalableAccount: self];
+            return;
+        }
         if (idx == 1) {
             // check if any card reader is connected
             if (![self prepareReaders]) {
@@ -398,8 +433,21 @@
 }
 
 - (void)windowDidBecomeKey: (NSNotification *)notification {
+    if (self.bankCodeToSelect != nil) {
+        NSError *error = nil;
+        [bankUserController fetchWithRequest: nil merge: NO error: &error];
+        for (BankUser *user in [bankUserController arrangedObjects]) {
+            if ([user.bankCode isEqualToString: self.bankCodeToSelect]) {
+                [bankUserController setSelectedObjects: @[user]];
+                break;
+            }
+        }
+        self.bankCodeToSelect = nil;
+    }
+    [self showDetailsForUser: [self selectedUser]];
+
     NSArray *users = [BankUser allUsers];
-    if ([users count] == 0 && triedFirst == NO) {
+    if ([users count] == 0 && ScalableService.bankUser == nil && triedFirst == NO) {
         [self addEntry: self];
         triedFirst = YES;
     }
@@ -476,6 +524,10 @@
 
 - (void)updateSigningOptions {
     BankUser *user = [self selectedUser];
+    if ([self isScalable: user]) {
+        [tanSigningOptions setContent: @[]];
+        return;
+    }
     if (user) {
         if ([user.secMethod intValue] == SecMethod_PinTan) {
             NSMutableArray *options = [[user getSigningOptions] mutableCopy];
@@ -500,6 +552,7 @@
 
 - (void)tableViewSelectionDidChange: (NSNotification *)aNotification {
     [self updateSigningOptions];
+    [self showDetailsForUser: [self selectedUser]];
 
     BankUser *user = [self selectedUser];
     if (user != nil) {
@@ -723,9 +776,15 @@
     alert.informativeText = NSLocalizedString(@"AP132", nil);
     [alert addButtonWithTitle: NSLocalizedString(@"AP4", nil)];
     [alert addButtonWithTitle: NSLocalizedString(@"AP3", nil)];
+    if ([self isScalable: user]) {
+        alert.informativeText = NSLocalizedString(@"AP2352", nil);
+    }
     [alert beginSheetModalForWindow: self.window completionHandler: ^(NSModalResponse returnCode) {
         if (returnCode == NSAlertSecondButtonReturn) {
-            if (user.userId == nil) {
+            if ([self isScalable: user]) {
+                [ScalableService disconnect];
+            }
+            if (user.userId == nil || [self isScalable: user]) {
                 [BankUser removeUser: user];
                 return;
             }
@@ -766,7 +825,7 @@
 
 - (IBAction)printBankParameter: (id)sender {
     BankUser *user = [self selectedUser];
-    if (user == nil) {
+    if (user == nil || [self isScalable: user]) {
         return;
     }
     
@@ -783,6 +842,10 @@
 - (IBAction)synchronize: (id)sender {
     BankUser *user = [self selectedUser];
     if (user == nil) {
+        return;
+    }
+    if ([self isScalable: user]) {
+        [bankController addScalableAccount: self];
         return;
     }
 
@@ -808,7 +871,7 @@
 
 - (IBAction)changePin: (id)sender {
     BankUser *user = [self selectedUser];
-    if (user == nil) {
+    if (user == nil || [self isScalable: user]) {
         return;
     }
 

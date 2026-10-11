@@ -509,6 +509,8 @@
 		C10CFBC8150A046A003DFC12 /* 100.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = C10CFBC7150A046A003DFC12 /* 100.xcmappingmodel */; };
 		C7A0C0DE0000000000000012 /* CryptoHolding.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0C0DE0000000000000011 /* CryptoHolding.swift */; };
 		C7A0C0DE0000000000000022 /* CryptoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0C0DE0000000000000021 /* CryptoService.swift */; };
+		C7A0C0DE0000000000000042 /* ScalableService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0C0DE0000000000000041 /* ScalableService.swift */; };
+		C7A0C0DE0000000000000052 /* ProviderAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0C0DE0000000000000051 /* ProviderAccount.swift */; };
 		C7A0C0DE0000000000000032 /* CryptoOverviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0C0DE0000000000000031 /* CryptoOverviewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -1319,6 +1321,8 @@
 		C7A0C0DE0000000000000001 /* Accounts 19.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Accounts 19.xcdatamodel"; sourceTree = "<group>"; };
 		C7A0C0DE0000000000000011 /* CryptoHolding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHolding.swift; sourceTree = "<group>"; };
 		C7A0C0DE0000000000000021 /* CryptoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoService.swift; sourceTree = "<group>"; };
+		C7A0C0DE0000000000000041 /* ScalableService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScalableService.swift; sourceTree = "<group>"; };
+		C7A0C0DE0000000000000051 /* ProviderAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderAccount.swift; sourceTree = "<group>"; };
 		C7A0C0DE0000000000000031 /* CryptoOverviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoOverviewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1702,6 +1706,8 @@
 				C7A0C0DE0000000000000011 /* CryptoHolding.swift */,
 				C7A0C0DE0000000000000021 /* CryptoService.swift */,
 				C7A0C0DE0000000000000031 /* CryptoOverviewController.swift */,
+				C7A0C0DE0000000000000041 /* ScalableService.swift */,
+				C7A0C0DE0000000000000051 /* ProviderAccount.swift */,
 			);
 			name = Overview;
 			sourceTree = "<group>";
@@ -3138,6 +3144,8 @@
 				C7A0C0DE0000000000000012 /* CryptoHolding.swift in Sources */,
 				C7A0C0DE0000000000000022 /* CryptoService.swift in Sources */,
 				C7A0C0DE0000000000000032 /* CryptoOverviewController.swift in Sources */,
+				C7A0C0DE0000000000000042 /* ScalableService.swift in Sources */,
+				C7A0C0DE0000000000000052 /* ProviderAccount.swift in Sources */,
 				27D576461662819E00761132 /* NSSplitView+PecuniaAdditions.m in Sources */,
 				27F69B7618BA3EFB002CBE06 /* zip.c in Sources */,
 				27DFFD9616739DAE00848CD2 /* CategoryMaintenanceController.m in Sources */,

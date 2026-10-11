@@ -864,5 +864,19 @@ AP2326 = "%@ (noch kein Kurs)";
 AP2327 = "z. B. 0,0125";
 AP2328 = "optional, z. B. Hardware-Wallet";
 AP2329 = "Krypto-Konto";
+AP2339 = "Scalable Capital ist über Agentic Investing (MCP) verbunden. „Synchronisieren“ meldet neu an und ruft die Scalable-Konten ab. „–“ entfernt die Anmeldung, die Konten bleiben erhalten.";
+AP2340 = "Scalable Capital";
+AP2341 = "Scalable Depot";
+AP2342 = "Scalable Verrechnungskonto";
+AP2343 = "Scalable %@";
+AP2345 = "Scalable: Erneute Anmeldung erforderlich (Bankkennungen > Scalable Capital > Synchronisieren)";
+AP2346 = "Die Scalable-Konten konnten nicht aktualisiert werden: %@";
+AP2347 = "Die Anmeldung bei Scalable ist abgeschlossen. Sie können dieses Fenster schließen und zu Pecunia zurückkehren.";
+AP2348 = "Verbindung zu Scalable fehlgeschlagen";
+AP2349 = "Pecunia kann die Anmeldung nicht empfangen, weil Port %d belegt ist.";
+AP2350 = "Die Anmeldung bei Scalable wurde nicht innerhalb von 10 Minuten abgeschlossen.";
+AP2351 = "Unerwartete Antwort von Scalable (%@)";
+AP2352 = "Die Scalable-Konten bleiben erhalten, werden aber nicht mehr aktualisiert.";
+AP2353 = "Die Anmeldung bei Scalable wurde abgebrochen.";
 
 

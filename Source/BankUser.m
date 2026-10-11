@@ -398,6 +398,8 @@ static NSMutableDictionary *users = nil;
     NSEntityDescription    *entityDescription = [NSEntityDescription entityForName: @"BankUser" inManagedObjectContext: context];
     NSFetchRequest         *request = [[NSFetchRequest alloc] init];
     [request setEntity: entityDescription];
+    // The Scalable connection has no HBCI access.
+    request.predicate = [NSPredicate predicateWithFormat: @"secMethod == nil OR secMethod != %d", SecMethod_Scalable];
     NSArray *bankUsers = [context executeFetchRequest: request error: &error];
     if (error) {
         LogError(@"Fehler beim Ermitteln der Bankkennungen: %@", error.localizedDescription);

@@ -104,8 +104,9 @@
             }
 
             [menu addItem: NSMenuItem.separatorItem];
+            BOOL canCreate = ![(BankingController *)self.delegate isScalableCategory: category];
             item = [menu addItemWithTitle: NSLocalizedString(@"AP232", nil)
-                                   action: @selector(createAccount:)
+                                   action: canCreate ? @selector(createAccount:) : nil
                             keyEquivalent: @""];
             item.indentationLevel = 1;
 
@@ -116,11 +117,13 @@
                 item.indentationLevel = 1;
             }
 
-            [menu addItem: NSMenuItem.separatorItem];
-            item = [menu addItemWithTitle: NSLocalizedString(@"AP227", nil)
-                                   action: @selector(editCategory:)
-                            keyEquivalent: @""];
-            item.indentationLevel = 1;
+            if (![(BankingController *)self.delegate isCryptoBankNode: category]) {
+                [menu addItem: NSMenuItem.separatorItem];
+                item = [menu addItemWithTitle: NSLocalizedString(@"AP227", nil)
+                                       action: @selector(editCategory:)
+                                keyEquivalent: @""];
+                item.indentationLevel = 1;
+            }
 
         }
     } else {

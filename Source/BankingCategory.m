@@ -566,6 +566,7 @@ static ShortDate *endReportDate = nil;
 
 - (BOOL)isDepotAccount {
     if ([self isBankAccount] && self.accountNumber != nil) {
+        if (self.isProviderAccount) return [ScalableService isDepotAccount: (BankAccount*)self];
         if (![HBCIBackend.backend isTransactionSupportedForAccount:TransactionType_CustodyAccountBalance account:(BankAccount*)self]) return FALSE;
         BankAccount *account = (BankAccount*)self;
         if (account.type == nil || account.type.intValue == 0) {

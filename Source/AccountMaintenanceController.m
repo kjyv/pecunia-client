@@ -106,6 +106,8 @@ extern NSString *const CategoryKey;
         }
         if (changedAccount.isCryptoAccount) {
             self.accountTypeName = NSLocalizedString(@"AP2329", nil);
+        } else if ([changedAccount.provider isEqualToString: ScalableService.provider]) {
+            self.accountTypeName = NSLocalizedString(@"AP2340", nil);
         }
     } else {
         // no manual account

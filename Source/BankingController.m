@@ -869,6 +869,7 @@ static BankingController *bankinControllerInstance;
     }
     
     [CryptoService refreshPricesFor: selectedAccounts completion: nil];
+    [ScalableService refreshAccounts: selectedAccounts interactive: !autoSyncRunning];
 
     // We need to filter userId == nil accounts out (the manual ones)
     NSMutableArray *accountsToKeep = [NSMutableArray arrayWithCapacity:[selectedAccounts count]];
@@ -1076,9 +1077,14 @@ static BankingController *bankinControllerInstance;
 }
 
 - (IBAction)editBankUsers: (id)sender {
+    [self editBankUsersSelectingBankCode: nil];
+}
+
+- (void)editBankUsersSelectingBankCode: (NSString *)bankCode {
     LogEnter;
 
     NewBankUserController * controller = [[NewBankUserController alloc] initForController: self];
+    controller.bankCodeToSelect = bankCode;
     [NSApp runModalForWindow: controller.window];
 
     LogLeave;
@@ -1485,6 +1491,21 @@ static BankingController *bankinControllerInstance;
     LogLeave;
 }
 
+- (IBAction)addScalableAccount: (id)sender {
+    LogEnter;
+
+    [ScalableService connectWithCompletion: ^(BOOL created) {
+        if (created) {
+            [self save];
+
+            [categoryController rearrangeObjects];
+            [BankingCategory.bankRoot updateCategorySums];
+        }
+    }];
+
+    LogLeave;
+}
+
 - (IBAction)showProperties: (id)sender {
     // In order to let KVO selection changes work properly when double clicking a node other than
     // the current one we have to run the modal dialogs after the runloop has finished its round.
@@ -1512,12 +1533,23 @@ static BankingController *bankinControllerInstance;
         [NSApp runModalForWindow: [changeController window]];
         [categoryController prepareContent];
         [BankingCategory.bankRoot updateCategorySums];
-    } else {
-        [self editBankUsers: nil];
+    } else if (![self isCryptoBankNode: cat]) {
+        [self editBankUsersSelectingBankCode: [cat valueForKey: @"bankCode"]];
     }
     // Changes are stored in the controllers.
 
     LogLeave;
+}
+
+// The crypto bank node has no bank access and hence no properties.
+- (BOOL)isCryptoBankNode: (BankingCategory *)category {
+    return category.isBankAccount && category.accountNumber == nil &&
+           [[category valueForKey: @"bankCode"] isEqualToString: CryptoService.bankCode];
+}
+
+// Scalable accounts come from the connection in the bank list, so no account can be added there.
+- (BOOL)isScalableCategory: (BankingCategory *)category {
+    return category.isBankAccount && [[category valueForKey: @"bankCode"] isEqualToString: ScalableService.bankCode];
 }
 
 - (IBAction)deleteAccount: (id)sender {
@@ -2682,6 +2714,13 @@ static BankingController *bankinControllerInstance;
 
 - (BOOL)validateMenuItem: (NSMenuItem *)item {
     NSInteger idx = [mainTabView indexOfTabViewItem: [mainTabView selectedTabViewItem]];
+
+    if ([item action] == @selector(showProperties:) && [self isCryptoBankNode: self.currentSelection]) {
+        return NO;
+    }
+    if ([item action] == @selector(addAccount:) && [self isScalableCategory: self.currentSelection]) {
+        return NO;
+    }
 
     if (idx != 0 || currentSectionIndex != 0) {
         if ([item action] == @selector(export:)) {

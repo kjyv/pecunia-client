@@ -52,34 +52,8 @@ import CoreData
     }
 
     @objc class func createAccount(name: String) -> BankAccount? {
-        guard let context = MOAssistant.shared().context, let root = BankingCategory.bankRoot() else {
-            return nil;
-        }
-
-        var bankNode = BankAccount.bankRoot(forCode: bankCode);
-        if bankNode == nil {
-            let node = NSEntityDescription.insertNewObject(forEntityName: "BankAccount", into: context) as! BankAccount;
-            node.bankCode = bankCode;
-            node.bankName = NSLocalizedString("AP2300", comment: "Krypto");
-            node.name = node.bankName;
-            node.currency = "EUR";
-            node.isBankAcc = NSNumber(value: true);
-            node.parent = root;
-            bankNode = node;
-        }
-
-        let account = NSEntityDescription.insertNewObject(forEntityName: "BankAccount", into: context) as! BankAccount;
-        account.bankCode = bankCode;
-        account.bankName = bankNode!.bankName;
-        account.name = name;
-        account.setValue(BankAccount.findFreeAccountNumber(), forKey: "accountNumber");
-        account.currency = "EUR";
-        account.balance = NSDecimalNumber.zero;
-        account.isManual = NSNumber(value: true);
-        account.provider = provider;
-        account.isBankAcc = NSNumber(value: true);
-        account.parent = bankNode;
-        return account;
+        return BankAccount.createProviderAccount(provider: provider, providerAccountId: nil, bankCode: bankCode,
+                                                 bankName: NSLocalizedString("AP2300", comment: "Krypto"), name: name);
     }
 
     class func holdings(of account: BankAccount) -> [CryptoHolding] {
