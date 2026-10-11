@@ -1,3 +1,4 @@
 *.diff
 Build
 DerivedData
+Local.xcconfig

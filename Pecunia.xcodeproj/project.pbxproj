@@ -866,6 +866,7 @@
 		27AA569E186C562D00B113E7 /* send3-active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "send3-active@2x.png"; sourceTree = "<group>"; };
 		27AE204118E6DE2700D4480A /* AboutWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutWindowController.h; sourceTree = "<group>"; };
 		27AE204218E6DE2700D4480A /* AboutWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutWindowController.m; sourceTree = "<group>"; wrapsLines = 0; };
+		C7A0C0DE0000000000000061 /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = SOURCE_ROOT; };
 		27AF3B35150BFCF700DEB25B /* Pecunia.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Pecunia.entitlements; path = ../Pecunia.entitlements; sourceTree = "<group>"; };
 		27AF5A99173FC8EC00929B0E /* move-cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "move-cursor.png"; sourceTree = "<group>"; };
 		27AF5A9A173FC8EC00929B0E /* move-cursor@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "move-cursor@2x.png"; sourceTree = "<group>"; };
@@ -1957,6 +1958,7 @@
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165DFE840E0CC02AAC07 /* InfoPlist.strings */,
 				27AF3B35150BFCF700DEB25B /* Pecunia.entitlements */,
+				C7A0C0DE0000000000000061 /* Development.xcconfig */,
 				B11F78D2162F0BFC00D7A8E5 /* container-migration.plist */,
 				B1137C36228764E000F0C012 /* BackgroundColors.xcassets */,
 			);
@@ -3181,20 +3183,18 @@
 /* Begin XCBuildConfiguration section */
 		B14C0A880AAF71DB00CC41C4 /* Development */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C7A0C0DE0000000000000061 /* Development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_ENTITLEMENTS = Pecunia.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_ENTITLEMENTS = "Pecunia-Development.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 40.01;
-				DEVELOPMENT_TEAM = JY3Q678PYA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/Build/Products/Debug",
+					"$(BUILD_DIR)/Debug",
 					"$(SRCROOT)/Frameworks",
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
@@ -3225,7 +3225,7 @@
 				INSTALL_PATH = /Applications;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Resources";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 2.2.2;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				ONLY_ACTIVE_ARCH = NO;
@@ -3238,7 +3238,6 @@
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = de.pecuniabanking.pecunia;
 				PRODUCT_NAME = Pecunia;
-				PROVISIONING_PROFILE_SPECIFIER = Pecunia;
 				SDKROOT = macosx;
 				SKIP_INSTALL = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -3267,7 +3266,7 @@
 				DEVELOPMENT_TEAM = JY3Q678PYA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/Build/Products/Debug",
+					"$(BUILD_DIR)/Debug",
 					"$(SRCROOT)/Frameworks",
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
@@ -3289,7 +3288,7 @@
 				INSTALL_PATH = /Applications;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Resources";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 2.2.2;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				ONLY_ACTIVE_ARCH = NO;
@@ -3327,7 +3326,7 @@
 				DEVELOPMENT_TEAM = JY3Q678PYA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/Build/Products/Debug",
+					"$(BUILD_DIR)/Debug",
 					"$(SRCROOT)/Frameworks",
 				);
 				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
@@ -3349,7 +3348,7 @@
 				INSTALL_PATH = /Applications;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Resources";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 2.2.2;
 				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				ONLY_ACTIVE_ARCH = NO;
@@ -3412,7 +3411,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = singlefile;
@@ -3457,7 +3456,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -3502,7 +3501,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 			};
