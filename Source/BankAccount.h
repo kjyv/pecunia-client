@@ -83,7 +83,9 @@ typedef enum {
 @property (nonatomic, strong) NSNumber        *noAutomaticQuery;
 @property (nonatomic, strong) NSNumber        *collTransferMethod;
 @property (nonatomic, strong) NSNumber        *isManual;
-@property (nonatomic, strong) NSNumber        *isCrypto;
+@property (nonatomic, strong) NSNumber        *isCrypto; // Replaced by provider, read only by BankingController.migrate.
+@property (nonatomic, strong) NSString        *provider; // Source of an account without a bank connection, e.g. "crypto".
+@property (nonatomic, strong) NSString        *providerAccountId; // Identifies the account at its provider.
 @property (nonatomic, strong) NSNumber        *isStandingOrderSupported;
 @property (nonatomic, strong) NSString        *splitRule;
 @property (nonatomic, strong) NSString        *accountSuffix;

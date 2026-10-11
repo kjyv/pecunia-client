@@ -20,6 +20,8 @@ import CoreData
         Coin(symbol: "BTC", name: "Bitcoin", krakenPair: "XBTEUR")
     ];
 
+    @objc static let provider = "crypto";
+
     // Bank code of the bank node that groups all crypto accounts.
     @objc static let bankCode = "CRYPTO";
 
@@ -40,7 +42,7 @@ import CoreData
             return [];
         }
         let request = NSFetchRequest<BankAccount>(entityName: "BankAccount");
-        request.predicate = NSPredicate(format: "isCrypto = 1 AND accountNumber != nil");
+        request.predicate = NSPredicate(format: "provider = %@ AND accountNumber != nil", provider);
         do {
             return try context.fetch(request);
         } catch {
@@ -74,7 +76,7 @@ import CoreData
         account.currency = "EUR";
         account.balance = NSDecimalNumber.zero;
         account.isManual = NSNumber(value: true);
-        account.isCrypto = NSNumber(value: true);
+        account.provider = provider;
         account.isBankAcc = NSNumber(value: true);
         account.parent = bankNode;
         return account;

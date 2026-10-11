@@ -66,7 +66,7 @@ extern NSString *const CategoryKey;
     account.noCatRep = acc.noCatRep;
     account.balance = acc.balance;
     account.isManual = acc.isManual;
-    account.isCrypto = acc.isCrypto;
+    account.provider = acc.provider;
 
     return self;
 }
@@ -101,8 +101,10 @@ extern NSString *const CategoryKey;
             [predicateEditor setObjectValue: pred];
         }
         self.accountTypeName = @"Manuelles Konto";
-        if (changedAccount.isCryptoAccount) {
+        if (changedAccount.isProviderAccount) {
             [predicateEditor setEnabled: NO];
+        }
+        if (changedAccount.isCryptoAccount) {
             self.accountTypeName = NSLocalizedString(@"AP2329", nil);
         }
     } else {
@@ -200,8 +202,8 @@ extern NSString *const CategoryKey;
     
     NSString *oldUserId = changedAccount.userId;
 
-    if (changedAccount.isCryptoAccount) {
-        // Balance comes from the holdings and statement rules do not apply.
+    if (changedAccount.isProviderAccount) {
+        // The provider sets the balance, and statement rules do not apply.
     } else if ([changedAccount.isManual boolValue] == YES) {
         NSPredicate *predicate = [predicateEditor objectValue];
         if (predicate) {

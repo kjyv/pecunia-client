@@ -577,6 +577,10 @@ static ShortDate *endReportDate = nil;
     return FALSE;
 }
 
+- (BOOL)isProviderAccount {
+    return NO;
+}
+
 - (BOOL)isCryptoAccount {
     return NO;
 }
@@ -944,7 +948,9 @@ static ShortDate *endReportDate = nil;
  * Returns YES if this category is an account and not manual, or if it contains at least one child like that.
  */
 - (BOOL)canSynchronize {
-    if (self.accountNumber != nil && [self respondsToSelector: @selector(isManual)] && ![(id)self isManual].boolValue) {
+    // Accounts from a provider are fetched like bank accounts, other manual accounts are not.
+    if (self.accountNumber != nil && [self respondsToSelector: @selector(isManual)] &&
+        (![(id)self isManual].boolValue || self.isProviderAccount)) {
         return YES;
     }
     for (BankingCategory *category in self.children) {

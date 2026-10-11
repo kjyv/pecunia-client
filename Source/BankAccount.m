@@ -48,6 +48,8 @@
 @dynamic collTransferMethod;
 @dynamic isManual;
 @dynamic isCrypto;
+@dynamic provider;
+@dynamic providerAccountId;
 @dynamic splitRule;
 @dynamic isStandingOrderSupported;
 @dynamic accountSuffix;
@@ -66,8 +68,12 @@
     return self.type.intValue / 10;
 }
 
+- (BOOL)isProviderAccount {
+    return self.provider.length > 0 && self.accountNumber != nil;
+}
+
 - (BOOL)isCryptoAccount {
-    return self.isCrypto.boolValue && self.accountNumber != nil;
+    return [self.provider isEqualToString: CryptoService.provider] && self.accountNumber != nil;
 }
 
 - (NSInteger)calcUnread {

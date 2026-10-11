@@ -3016,7 +3016,7 @@ static BankingController *bankinControllerInstance;
     if (cat == nil) {
         return;
     }
-    if (cat.accountNumber == nil || cat.isCryptoAccount) {
+    if (cat.accountNumber == nil || cat.isProviderAccount) {
         return;
     }
 
@@ -3961,8 +3961,15 @@ static BankingController *bankinControllerInstance;
                     if ((parent.bankName == nil || parent.bankName.length == 0) && parent.parent != nil && user.bankName != nil) parent.bankName = user.bankName;
                     if ((parent.bic == nil || parent.bic.length == 0) && parent.parent != nil && account.bic != nil) parent.bic = account.bic;
                 }
-            }            
+            }
         }
+    }
+
+    // Crypto accounts were marked by isCrypto before the provider attribute existed.
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName: @"BankAccount"];
+    request.predicate = [NSPredicate predicateWithFormat: @"isCrypto == YES AND provider == nil"];
+    for (BankAccount *account in [managedObjectContext executeFetchRequest: request error: nil]) {
+        account.provider = CryptoService.provider;
     }
 
     LogLeave;
