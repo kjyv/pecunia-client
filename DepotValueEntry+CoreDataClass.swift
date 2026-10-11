@@ -35,17 +35,23 @@ public class DepotValueEntry: NSManagedObject {
         return result;
     }
     
+    // Positions without a buy price have no known change, so their value is left out.
     func depotChange() -> NSDecimalNumber {
         var oldValue = NSDecimalNumber.zero;
+        var valueWithoutBuyPrice = NSDecimalNumber.zero;
+        var hasBuyPrice = false;
         if let instruments = self.instruments {
             for instrument in instruments.allObjects as! [Instrument] {
                 if let startPrice = instrument.startPrice, let totalNumber = instrument.totalNumber {
                     oldValue = oldValue.adding(startPrice.multiplying(by: totalNumber));
+                    hasBuyPrice = true;
+                } else if let value = instrument.depotValue {
+                    valueWithoutBuyPrice = valueWithoutBuyPrice.adding(value);
                 }
             }
         }
-        if let depotValue = self.depotValue {
-            return depotValue.subtracting(oldValue);
+        if let depotValue = self.depotValue, hasBuyPrice {
+            return depotValue.subtracting(valueWithoutBuyPrice).subtracting(oldValue);
         } else {
             return NSDecimalNumber.zero;
         }
