@@ -835,4 +835,34 @@ AP2013 = "Die angegebene PIN ist womöglich nicht korrekt. Nähere Informationen
 AP2200 = "Die Umsätze von Konto %@ werden jetzt auf das Konto %@ übertragen. Die Aktion kann nicht rückgängig gemacht werden! Bitte erstellen Sie zur Sicherheit ein Backup der Datendatei (%@)";
 AP2201 = "Die Umsätze wurden erfolgreich übertragen";
 
+AP2300 = "Krypto";
+AP2301 = "Die Krypto-Kurse konnten nicht abgerufen werden. Die Werte beruhen auf dem letzten bekannten Kurs";
+AP2302 = "Neues Krypto-Konto";
+AP2303 = "Das Konto erscheint in der Kontenliste unter „Krypto“. Den Bestand erfassen Sie anschließend in der Kontoansicht.";
+AP2305 = "Währung";
+AP2306 = "Bezeichnung";
+AP2307 = "Menge";
+AP2308 = "Kurs";
+AP2309 = "Wert";
+AP2310 = "Kursdatum";
+AP2311 = "Hinzufügen…";
+AP2312 = "Bearbeiten…";
+AP2313 = "Entfernen";
+AP2314 = "Kurse aktualisieren";
+AP2315 = "Bestand hinzufügen";
+AP2316 = "Bestand bearbeiten";
+AP2317 = "Menge:";
+AP2318 = "Bezeichnung:";
+AP2319 = "Währung:";
+AP2320 = "Ungültige Menge";
+AP2321 = "Geben Sie eine positive Zahl mit höchstens 8 Nachkommastellen ein, z. B. 0,0125.";
+AP2322 = "Bestand entfernen?";
+AP2323 = "Der Bestand von %@ wird aus diesem Konto entfernt.";
+AP2324 = "Noch kein Bestand erfasst. Erfassen Sie ihn mit „Hinzufügen…“.";
+AP2325 = "%@ zu %@ (Stand %@)";
+AP2326 = "%@ (noch kein Kurs)";
+AP2327 = "z. B. 0,0125";
+AP2328 = "optional, z. B. Hardware-Wallet";
+AP2329 = "Krypto-Konto";
+
 

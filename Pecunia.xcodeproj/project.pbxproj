@@ -354,6 +354,9 @@
 		B1014C67101A37E800ABA1FF /* DonationMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = B1014C66101A37E800ABA1FF /* DonationMessageController.m */; };
 		B1029E120E3FA1D700CC681B /* CategoryDefWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B1029E110E3FA1D700CC681B /* CategoryDefWindowController.m */; };
 		B10937BA265FC33E0043D005 /* DepotOverview.xib in Resources */ = {isa = PBXBuildFile; fileRef = B10937B9265FC33E0043D005 /* DepotOverview.xib */; };
+		C7A0C0DE0000000000000012 /* CryptoHolding.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0C0DE0000000000000011 /* CryptoHolding.swift */; };
+		C7A0C0DE0000000000000022 /* CryptoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0C0DE0000000000000021 /* CryptoService.swift */; };
+		C7A0C0DE0000000000000032 /* CryptoOverviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A0C0DE0000000000000031 /* CryptoOverviewController.swift */; };
 		B10937BD265FE0B40043D005 /* DepotOverviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10937BC265FE0B40043D005 /* DepotOverviewController.swift */; };
 		B10A57C62267B89B00A1028C /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10A57B52267B89A00A1028C /* Sequence.swift */; };
 		B10A57C82267B89B00A1028C /* ExSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10A57B62267B89A00A1028C /* ExSwift.swift */; };
@@ -1063,6 +1066,9 @@
 		B1029E100E3FA1D700CC681B /* CategoryDefWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = CategoryDefWindowController.h; sourceTree = "<group>"; tabWidth = 4; };
 		B1029E110E3FA1D700CC681B /* CategoryDefWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryDefWindowController.m; sourceTree = "<group>"; tabWidth = 4; wrapsLines = 0; };
 		B10937B9265FC33E0043D005 /* DepotOverview.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DepotOverview.xib; sourceTree = "<group>"; };
+		C7A0C0DE0000000000000011 /* CryptoHolding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHolding.swift; sourceTree = "<group>"; };
+		C7A0C0DE0000000000000021 /* CryptoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoService.swift; sourceTree = "<group>"; };
+		C7A0C0DE0000000000000031 /* CryptoOverviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoOverviewController.swift; sourceTree = "<group>"; };
 		B10937BC265FE0B40043D005 /* DepotOverviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepotOverviewController.swift; sourceTree = "<group>"; };
 		B10A57B52267B89A00A1028C /* Sequence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Sequence.swift; path = Source/ExSwift/Sequence.swift; sourceTree = SOURCE_ROOT; };
 		B10A57B62267B89A00A1028C /* ExSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExSwift.swift; path = Source/ExSwift/ExSwift.swift; sourceTree = SOURCE_ROOT; };
@@ -1273,6 +1279,7 @@
 		B1D5A79F265D37B000531EB9 /* fints_institute.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = fints_institute.csv; sourceTree = "<group>"; };
 		B1D5A7A0265D37B000531EB9 /* bank_codes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = bank_codes.txt; sourceTree = "<group>"; };
 		B1D5A7A1265D37B000531EB9 /* mappings.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = mappings.txt; sourceTree = "<group>"; };
+		C7A0C0DE0000000000000001 /* Accounts 19.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Accounts 19.xcdatamodel"; sourceTree = "<group>"; };
 		B1D5A7AD265D818400531EB9 /* Accounts 18.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Accounts 18.xcdatamodel"; sourceTree = "<group>"; };
 		B1D5A7CC265D90A200531EB9 /* DepotValueEntry+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DepotValueEntry+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		B1D5A7CE265D90A200531EB9 /* Instrument+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Instrument+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
@@ -1691,6 +1698,9 @@
 				27FD0DA4184120AE0047911C /* StatementsOverviewController.h */,
 				27FD0DA5184120AE0047911C /* StatementsOverviewController.m */,
 				B10937BC265FE0B40043D005 /* DepotOverviewController.swift */,
+				C7A0C0DE0000000000000011 /* CryptoHolding.swift */,
+				C7A0C0DE0000000000000021 /* CryptoService.swift */,
+				C7A0C0DE0000000000000031 /* CryptoOverviewController.swift */,
 			);
 			name = Overview;
 			sourceTree = "<group>";
@@ -3124,6 +3134,9 @@
 				2701A84B165E827F00A9A1C7 /* SystemNotification.m in Sources */,
 				011DADE01EA37DD200A44EFE /* ChipcardPinRequestController.swift in Sources */,
 				B10937BD265FE0B40043D005 /* DepotOverviewController.swift in Sources */,
+				C7A0C0DE0000000000000012 /* CryptoHolding.swift in Sources */,
+				C7A0C0DE0000000000000022 /* CryptoService.swift in Sources */,
+				C7A0C0DE0000000000000032 /* CryptoOverviewController.swift in Sources */,
 				27D576461662819E00761132 /* NSSplitView+PecuniaAdditions.m in Sources */,
 				27F69B7618BA3EFB002CBE06 /* zip.c in Sources */,
 				27DFFD9616739DAE00848CD2 /* CategoryMaintenanceController.m in Sources */,
@@ -3536,6 +3549,7 @@
 		27E55349146ED844001DE9BE /* Accounts.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				C7A0C0DE0000000000000001 /* Accounts 19.xcdatamodel */,
 				B1D5A7AD265D818400531EB9 /* Accounts 18.xcdatamodel */,
 				B178C6131C3489020082E25F /* Accounts 17.xcdatamodel */,
 				27A85F851B1A01190017D863 /* Accounts 16.xcdatamodel */,
@@ -3556,7 +3570,7 @@
 				27E5534A146ED844001DE9BE /* Accounts 1.xcdatamodel */,
 				27E5534C146ED844001DE9BE /* Accounts.xcdatamodel */,
 			);
-			currentVersion = B1D5A7AD265D818400531EB9 /* Accounts 18.xcdatamodel */;
+			currentVersion = C7A0C0DE0000000000000001 /* Accounts 19.xcdatamodel */;
 			path = Accounts.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

@@ -25,7 +25,7 @@
     IBOutlet NSTextField         *messageField;
 }
 
-+ (StatusBarController *)controller;
++ (StatusBarController *)controller NS_SWIFT_NAME(controller());
 
 - (void)startSpinning;
 - (void)stopSpinning;

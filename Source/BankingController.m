@@ -868,6 +868,8 @@ static BankingController *bankinControllerInstance;
                         );
     }
     
+    [CryptoService refreshPricesFor: selectedAccounts completion: nil];
+
     // We need to filter userId == nil accounts out (the manual ones)
     NSMutableArray *accountsToKeep = [NSMutableArray arrayWithCapacity:[selectedAccounts count]];
     for (BankAccount *account in selectedAccounts) {
@@ -876,6 +878,10 @@ static BankingController *bankinControllerInstance;
         }
     }
     [selectedAccounts setArray:accountsToKeep];
+    if (selectedAccounts.count == 0) {
+        LogLeave;
+        return;
+    }
 
 
     // Prepare UI.
@@ -1442,6 +1448,11 @@ static BankingController *bankinControllerInstance;
             bankCode = [cat valueForKey: @"bankCode"];
         }
     }
+    if ([bankCode isEqualToString: CryptoService.bankCode]) {
+        [self addCryptoAccount: sender];
+        LogLeave;
+        return;
+    }
 
     AccountDefController *defController = [[AccountDefController alloc] init];
     if (bankCode) {
@@ -1451,6 +1462,20 @@ static BankingController *bankinControllerInstance;
     NSModalResponse res = [NSApp runModalForWindow: [defController window]];
     if (res) {
         // account was created
+        [self save];
+
+        [categoryController rearrangeObjects];
+        [BankingCategory.bankRoot updateCategorySums];
+    }
+
+    LogLeave;
+}
+
+- (IBAction)addCryptoAccount: (id)sender {
+    LogEnter;
+
+    BankAccount *account = [CryptoOverviewController runCreateAccountDialog];
+    if (account != nil) {
         [self save];
 
         [categoryController rearrangeObjects];
@@ -1655,7 +1680,18 @@ static BankingController *bankinControllerInstance;
         }
         NSRect frame = [currentView frame];
 
-        if ([cat isDepotAccount]) {
+        if ([cat isCryptoAccount]) {
+            if (cryptoOverviewController == nil) {
+                cryptoOverviewController = [[CryptoOverviewController alloc] init];
+            }
+            if (currentSection != cryptoOverviewController) {
+                [currentSection deactivate];
+                [[cryptoOverviewController mainView] setFrame: frame];
+                [rightPane replaceSubview: currentView with: [cryptoOverviewController mainView]];
+                currentSection = cryptoOverviewController;
+                return TRUE;
+            }
+        } else if ([cat isDepotAccount]) {
             if (depotOverviewController == nil) {
                 depotOverviewController = [[DepotOverviewController alloc] init];
                 if ([NSBundle.mainBundle loadNibNamed: @"DepotOverview" owner: depotOverviewController topLevelObjects: nil]) {
@@ -2651,7 +2687,7 @@ static BankingController *bankinControllerInstance;
         if ([item action] == @selector(export:)) {
             return NO;
         }
-        if ([item action] == @selector(addAccount:)) {
+        if ([item action] == @selector(addAccount:) || [item action] == @selector(addCryptoAccount:)) {
             return NO;
         }
         if ([item action] == @selector(showProperties:)) {
@@ -2980,7 +3016,7 @@ static BankingController *bankinControllerInstance;
     if (cat == nil) {
         return;
     }
-    if (cat.accountNumber == nil) {
+    if (cat.accountNumber == nil || cat.isCryptoAccount) {
         return;
     }
 

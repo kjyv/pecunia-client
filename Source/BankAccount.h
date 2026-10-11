@@ -83,6 +83,7 @@ typedef enum {
 @property (nonatomic, strong) NSNumber        *noAutomaticQuery;
 @property (nonatomic, strong) NSNumber        *collTransferMethod;
 @property (nonatomic, strong) NSNumber        *isManual;
+@property (nonatomic, strong) NSNumber        *isCrypto;
 @property (nonatomic, strong) NSNumber        *isStandingOrderSupported;
 @property (nonatomic, strong) NSString        *splitRule;
 @property (nonatomic, strong) NSString        *accountSuffix;
@@ -90,6 +91,7 @@ typedef enum {
 @property (nonatomic, strong) NSSet           *users;
 @property (nonatomic, readonly) NSString      *localAccountName;
 @property (nonatomic, strong) DepotValueEntry *depotValueEntry;
+@property (nonatomic, strong) NSSet           *cryptoHoldings;
 
 - (void)evaluateQueryResult: (BankQueryResult *)res;
 - (int)updateFromQueryResult: (BankQueryResult *)result;

@@ -577,6 +577,10 @@ static ShortDate *endReportDate = nil;
     return FALSE;
 }
 
+- (BOOL)isCryptoAccount {
+    return NO;
+}
+
 - (BOOL)isInsertable {
     if (self.isBankAcc.boolValue) {
         return NO;

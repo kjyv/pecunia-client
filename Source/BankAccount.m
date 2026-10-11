@@ -47,11 +47,13 @@
 @dynamic noAutomaticQuery;
 @dynamic collTransferMethod;
 @dynamic isManual;
+@dynamic isCrypto;
 @dynamic splitRule;
 @dynamic isStandingOrderSupported;
 @dynamic accountSuffix;
 @dynamic users;
 @dynamic depotValueEntry;
+@dynamic cryptoHoldings;
 
 @synthesize dbStatements;
 @synthesize unread;
@@ -62,6 +64,10 @@
 
 - (BankAccountType)accountType {
     return self.type.intValue / 10;
+}
+
+- (BOOL)isCryptoAccount {
+    return self.isCrypto.boolValue && self.accountNumber != nil;
 }
 
 - (NSInteger)calcUnread {

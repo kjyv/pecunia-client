@@ -569,6 +569,11 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
+                        <binding destination="56" name="editable" keyPath="selection.isCrypto" id="cRy-pT-eD1">
+                            <dictionary key="options">
+                                <string key="NSValueTransformerName">NSNegateBoolean</string>
+                            </dictionary>
+                        </binding>
                         <binding destination="56" name="value" keyPath="selection.balance" id="283"/>
                     </connections>
                 </textField>

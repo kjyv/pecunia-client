@@ -66,6 +66,7 @@ extern NSString *const CategoryKey;
     account.noCatRep = acc.noCatRep;
     account.balance = acc.balance;
     account.isManual = acc.isManual;
+    account.isCrypto = acc.isCrypto;
 
     return self;
 }
@@ -100,6 +101,10 @@ extern NSString *const CategoryKey;
             [predicateEditor setObjectValue: pred];
         }
         self.accountTypeName = @"Manuelles Konto";
+        if (changedAccount.isCryptoAccount) {
+            [predicateEditor setEnabled: NO];
+            self.accountTypeName = NSLocalizedString(@"AP2329", nil);
+        }
     } else {
         // no manual account
         [usersController setManagedObjectContext:[[MOAssistant sharedAssistant] context]];
@@ -195,7 +200,9 @@ extern NSString *const CategoryKey;
     
     NSString *oldUserId = changedAccount.userId;
 
-    if ([changedAccount.isManual boolValue] == YES) {
+    if (changedAccount.isCryptoAccount) {
+        // Balance comes from the holdings and statement rules do not apply.
+    } else if ([changedAccount.isManual boolValue] == YES) {
         NSPredicate *predicate = [predicateEditor objectValue];
         if (predicate) {
             changedAccount.rule = [predicate description];

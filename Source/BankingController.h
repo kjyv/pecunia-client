@@ -45,6 +45,7 @@
 @class BankMessageWindowController;
 @class AccountStatementsWindowController;
 @class DepotOverviewController;
+@class CryptoOverviewController;
 
 @class JMModalOverlay;
 @class WaitViewController;
@@ -85,6 +86,7 @@
     HomeScreenController             *homeScreenController;
     StatementsOverviewController     *overviewController;
     DepotOverviewController          *depotOverviewController;
+    CryptoOverviewController         *cryptoOverviewController;
     CategoryAnalysisWindowController *categoryAnalysisController;
     CategoryRepWindowController      *categoryReportingController;
     CategoryDefWindowController      *categoryDefinitionController;
@@ -111,6 +113,7 @@
 @property (nonatomic, assign) BOOL updatingWordList;
 
 - (IBAction)addAccount: (id)sender;
+- (IBAction)addCryptoAccount: (id)sender;
 - (IBAction)showProperties: (id)sender;
 - (IBAction)deleteAccount: (id)sender;
 - (IBAction)editPreferences: (id)sender;
@@ -174,6 +177,7 @@
 - (void)startRefreshAnimation;
 - (void)stopRefreshAnimation;
 
-+ (BankingController *)controller;
++ (BankingController *)controller NS_SWIFT_NAME(controller());
+- (BOOL)save;
 
 @end

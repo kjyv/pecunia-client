@@ -734,6 +734,12 @@ Unterstütze die Entwicklung!</string>
                                     <action selector="addAccount:" target="235" id="4435"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Neues Krypto-Konto..." id="cRy-mN-it1">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="addCryptoAccount:" target="235" id="cRy-mN-ac1"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Eigenschaften..." id="4434">
                                 <connections>
                                     <action selector="showProperties:" target="235" id="AOh-cG-fbC"/>
