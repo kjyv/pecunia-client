@@ -250,7 +250,8 @@ private enum ScalableError: LocalizedError {
                 case .depot(let portfolioId):
                     let holdings = try await session.call("get_portfolio_holdings", ["portfolioId": portfolioId]);
                     let overview = try await session.call("get_portfolio_overview", ["portfolioId": portfolioId]);
-                    updateDepot(account, holdings: holdings, overview: overview);
+                    let trades = try await self.transactions(session, portfolioId: portfolioId, from: nil, types: positionTypes);
+                    updateDepot(account, holdings: holdings, overview: overview, buyPrices: averageBuyPrices(trades));
                 }
             }
             // Without an await in between, a bank request cannot reset the memory context while the
@@ -425,9 +426,65 @@ private enum ScalableError: LocalizedError {
         return result;
     }
 
-    // Holdings carry no buy price, so the depot view shows no change for them. Crypto at Scalable counts in
-    // the depot value but has no position rows, since the server gives no prices for it.
-    private class func updateDepot(_ account: BankAccount, holdings: [String: Any], overview: [String: Any]) {
+    // MARK: - Depot
+
+    private static let positionTypes = ["BUY", "SELL", "SAVINGS_PLAN", "TRANSFER_IN", "TRANSFER_OUT"];
+
+    // Average buy price per ISIN. A sale takes its share of the cost at the average price. An ISIN with a
+    // transfer from another depot or a cancellation has no known cost and gets no price.
+    private class func averageBuyPrices(_ transactions: [Transaction]) -> [String: (quantity: Decimal, price: NSDecimalNumber)] {
+        var quantities: [String: Decimal] = [:];
+        var costs: [String: Decimal] = [:];
+        var unknownCost = Set<String>();
+        for transaction in transactions.sorted(by: { $0.date < $1.date })
+            where transaction.status == "FILLED" || transaction.status == "SETTLED" {
+            guard let isin = transaction.isin else {
+                continue;
+            }
+            if transaction.isCancellation || transaction.type == "TRANSFER_IN" {
+                unknownCost.insert(isin);
+                continue;
+            }
+            guard let quantity = transaction.quantity.map({ abs($0.decimalValue) }), quantity > 0 else {
+                continue;
+            }
+            let held = quantities[isin] ?? 0;
+            let cost = costs[isin] ?? 0;
+            switch transaction.type {
+            case "BUY", "SAVINGS_PLAN":
+                guard let amount = transaction.amount.map({ abs($0.decimalValue) }) else {
+                    unknownCost.insert(isin);
+                    continue;
+                }
+                quantities[isin] = held + quantity;
+                costs[isin] = cost + amount;
+            case "SELL", "TRANSFER_OUT":
+                guard held > 0 else {
+                    unknownCost.insert(isin);
+                    continue;
+                }
+                let remaining = max(held - quantity, 0);
+                costs[isin] = cost * remaining / held;
+                quantities[isin] = remaining;
+            default:
+                continue;
+            }
+        }
+
+        let priceRounding = NSDecimalNumberHandler(roundingMode: .plain, scale: 4, raiseOnExactness: false, raiseOnOverflow: true,
+                                                   raiseOnUnderflow: true, raiseOnDivideByZero: true);
+        var prices: [String: (quantity: Decimal, price: NSDecimalNumber)] = [:];
+        for (isin, quantity) in quantities where quantity > 0 && !unknownCost.contains(isin) {
+            prices[isin] = (quantity, NSDecimalNumber(decimal: costs[isin]! / quantity).rounding(accordingToBehavior: priceRounding));
+        }
+        return prices;
+    }
+
+    // A position gets a buy price only if its transactions add up to the held quantity. Crypto has no price per
+    // coin, so its value stands in one row without a buy price. Without that row, the depot change would count
+    // the crypto value as gain.
+    private class func updateDepot(_ account: BankAccount, holdings: [String: Any], overview: [String: Any],
+                                   buyPrices: [String: (quantity: Decimal, price: NSDecimalNumber)]) {
         guard let context = account.managedObjectContext else {
             return;
         }
@@ -465,6 +522,17 @@ private enum ScalableError: LocalizedError {
                 instrument.depotValue = price.multiplying(by: quantity, withBehavior: centRounding);
                 instrument.depotValueCurrency = currency;
             }
+            if let isin = instrument.isin, let buy = buyPrices[isin], abs(buy.quantity - quantity.decimalValue) < Decimal(string: "0.000001")! {
+                instrument.startPrice = buy.price;
+                instrument.startPriceCurrency = "EUR";
+            }
+            entry.addToInstruments(instrument);
+        }
+        if let crypto = decimal(valuation?["crypto"]), crypto.compare(NSDecimalNumber.zero) == .orderedDescending {
+            let instrument = NSEntityDescription.insertNewObject(forEntityName: "Instrument", into: context) as! Instrument;
+            instrument.name = NSLocalizedString("AP2366", comment: "Krypto (gesamt)");
+            instrument.depotValue = crypto.rounding(accordingToBehavior: centRounding);
+            instrument.depotValueCurrency = "EUR";
             entry.addToInstruments(instrument);
         }
 
