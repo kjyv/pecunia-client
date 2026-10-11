@@ -32,6 +32,7 @@
     IBOutlet NSMatrix          *expRadioMatrix;
     IBOutlet NSView            *contentView;
     IBOutlet PXListView        *colorListView;
+    IBOutlet NSTextField       *dataDirField;
     IBOutlet NSTextField       *dataFileField;
 
     // Home screen.

@@ -12,6 +12,7 @@
                 <outlet property="accountSelector2" destination="f6h-h3-ePx" id="xGV-pz-ysy"/>
                 <outlet property="colorListView" destination="1043" id="1047"/>
                 <outlet property="contentView" destination="6" id="857"/>
+                <outlet property="dataDirField" destination="222" id="dDr-fL-d01"/>
                 <outlet property="dataFileField" destination="1084" id="1140"/>
                 <outlet property="encryptButton" destination="287" id="461"/>
                 <outlet property="encryptionSheet" destination="345" id="380"/>
@@ -728,13 +729,6 @@
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
-                                                        <connections>
-                                                            <binding destination="88" name="value" keyPath="values.DataDir" id="1079">
-                                                                <dictionary key="options">
-                                                                    <string key="NSNullPlaceholder">Daten werden im Pecunia-Standardverzeichnis gesichert</string>
-                                                                </dictionary>
-                                                            </binding>
-                                                        </connections>
                                                     </textField>
                                                 </subviews>
                                             </view>

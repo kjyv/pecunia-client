@@ -1046,8 +1046,8 @@ static NSString *rDir = @"~/Library/Application Support/Pecunia/Resources";
 - (void)relocateToURL: (NSURL *)newFilePathURL {
     LogEnter;
 
-    // check if it is already
-    if ([newFilePathURL isEqual: dataDirURL]) {
+    // The data file is already there. The check below would offer to overwrite it.
+    if ([newFilePathURL.URLByStandardizingPath.path isEqualToString: pecuniaFileURL.URLByStandardizingPath.path]) {
         LogLeave;
         return;
     }

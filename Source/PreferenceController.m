@@ -312,7 +312,7 @@ static NSDictionary *heightMappings;
     MOAssistant *assistant = [MOAssistant sharedAssistant];
     encrypt = assistant.isEncrypted;
     [self setValue: @(assistant.isEncrypted) forKey: @"encrypt"];
-    [dataFileField setStringValue: [assistant dataFilename]];
+    [self showDataFileLocation];
 
     // Select first tab.
     [toolBar setSelectedItemIdentifier: @"general"];
@@ -530,21 +530,32 @@ static NSDictionary *heightMappings;
 }
 
 
+// The DataDir default is empty for the default folder, so the folder comes from MOAssistant.
+- (void)showDataFileLocation
+{
+    MOAssistant *assistant = [MOAssistant sharedAssistant];
+    [dataDirField setStringValue: assistant.dataDirURL.path];
+    [dataFileField setStringValue: [assistant dataFilename]];
+}
+
 - (IBAction)changeFileLocation: (id)sender
 {
     MOAssistant *assistant = [MOAssistant sharedAssistant];
     [assistant relocate];
+    [self showDataFileLocation];
 }
 
 - (IBAction)useFileLocation:(id)sender
 {
     [[MOAssistant sharedAssistant] useExistingDataFile:nil];
+    [self showDataFileLocation];
 }
 
 
 - (IBAction)restoreFileLocation: (id)sender
 {
     [[MOAssistant sharedAssistant] relocateToStandard];
+    [self showDataFileLocation];
 }
 
 - (IBAction)openFileLocation: (id)sender
