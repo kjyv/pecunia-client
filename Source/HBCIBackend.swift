@@ -1004,6 +1004,8 @@ class HBCIBackend : NSObject, HBCILog {
 
                     try context.save();
                     return nil;
+                } else {
+                    resultWindow.addMessage("Fehler beim Erstellen oder Synchronisieren der Bankkennung. Details im Logfile.");
                 }
             }
         }
@@ -1786,26 +1788,24 @@ class HBCIBackend : NSObject, HBCILog {
                 let hbciAccount = HBCIAccount(account: account);
                 var dateFrom:Date?
                 
-                // find out how many days to read from the past, if there was no previous call yet
-                var histStatDays = 90; //default to 90 days in the past
+                // find out how many days to read from the past
+                var maxStatDays = 0;
                 if UserDefaults.standard.bool(forKey: "limitStatsAge") {
-                    let days = UserDefaults.standard.integer(forKey: "histStatDays");
-                    if days > histStatDays {
-                        histStatDays = days;
-                    }
+                    maxStatDays = UserDefaults.standard.integer(forKey: "maxStatDays");
                 }
                 
-                if account.latestTransferDate == nil {
-                    account.latestTransferDate = Date(timeInterval: TimeInterval(-86400 * histStatDays), since: Date());
+                if account.latestTransferDate == nil && maxStatDays > 0 {
+                    account.latestTransferDate = Date(timeInterval: TimeInterval(-86400 * maxStatDays), since: Date());
                 }
                 
                 if let latestDate = account.latestTransferDate {
                     
                     var fromDate = Date(timeInterval: -605000, since: latestDate);
 
-                    let maxStatDays = UserDefaults.standard.integer(forKey: "maxStatDays");
-                    if maxStatDays > 14 {
-                        fromDate = Date(timeInterval: TimeInterval(-86400 * maxStatDays), since: latestDate);
+                    // A range of more than 90 days makes most banks ask for a TAN.
+                    let histStatementDays = UserDefaults.standard.integer(forKey: "histStatDays");
+                    if histStatementDays > 14 {
+                        fromDate = Date(timeInterval: TimeInterval(-86400 * histStatementDays), since: latestDate);
                     }
 
                     //let fromDate = Date(timeInterval: -10000000, since: latestDate);  // force TAN
